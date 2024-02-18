@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+	<metadata>
+		<id>PirogAlex.MathLib</id>
+		<version>0.0.2</version>
+		<!--<title>$title$</title>-->
+		<authors>PirogAlex</authors>
+		<description>Пакет для математических операций с числами</description>
+		
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<license type="expression">MIT</license>
+		<copyright>Home sweet home, 2024</copyright>
+		
+		<!-- <icon>icon.png</icon> -->
+		<!--<projectUrl>http://project_url_here_or_delete_this_line/</projectUrl>-->
+		<!--<RepositoryUrl>https://github.com/OWNER/REPOSITORY</RepositoryUrl>-->
+		<!--<RepositoryUrl>https://github.com/PirogAlex/Math</RepositoryUrl>-->
+		<projectUrl>https://github.com/PirogAlex/Math</projectUrl>
+		<repository type="Nuget" />
+		<dependencies>
+			<group targetFramework="netstandard2.1">
+				<!--<dependency id="NETStandard.Library" version="2.0.3" exclude="Build,Analyzers" />-->
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="PirogAlex.MathLib.dll" target="lib\netstandard2.1" />
+	</files>
+</package>

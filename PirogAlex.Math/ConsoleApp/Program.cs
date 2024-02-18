@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp
+﻿using PirogAlex.MathLib;
+
+namespace ConsoleApp
 {
     internal class Program
     {
