@@ -12,9 +12,6 @@
 		<copyright>Home sweet home, 2024</copyright>
 		
 		<!-- <icon>icon.png</icon> -->
-		<!--<projectUrl>http://project_url_here_or_delete_this_line/</projectUrl>-->
-		<!--<RepositoryUrl>https://github.com/OWNER/REPOSITORY</RepositoryUrl>-->
-		<!--<RepositoryUrl>https://github.com/PirogAlex/Math</RepositoryUrl>-->
 		<projectUrl>https://github.com/PirogAlex/Math</projectUrl>
 		<repository type="Nuget" />
 		<dependencies>
