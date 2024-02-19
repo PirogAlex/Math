@@ -9,7 +9,7 @@ namespace PirogAlex.MathLib
         public readonly int MaxSupportedBaseFormat = 16;
 
         private readonly bool _onlyPositiveNumbers;
-        private readonly bool _needRoundConvertedValue;
+        private readonly bool _needRoundConvertedValue = true;
 
         public NumberToStringConverter() { }
 
@@ -122,7 +122,7 @@ namespace PirogAlex.MathLib
 
                 var precisionInner = _needRoundConvertedValue ? precision + 1 : precision;
 
-                while (currentValue > 0 && currentPrecision <= precisionInner)
+                while (currentValue > 0 && currentPrecision < precisionInner)
                 {
                     var valueLeft = Math.Truncate(currentValue * expectedBaseFormat);
                     var valueLeftStr = expectedBaseFormat > 10
@@ -135,9 +135,9 @@ namespace PirogAlex.MathLib
                     currentPrecision++;
 
                     //Округление по правилам математики с учётом ограничения точности числа
-                    if (_needRoundConvertedValue && currentPrecision > precisionInner)
+                    if (_needRoundConvertedValue && currentPrecision >= precisionInner)
                     {
-                        result = ConvertNumberUpIfNeeded(result, expectedBaseFormat, valueLeft);
+                        result = ConvertNumberUpIfNeeded(result, expectedBaseFormat, Math.Truncate(currentValue * expectedBaseFormat), GetFractionalPart(currentValue * expectedBaseFormat));
                     }
                 }
             }
@@ -151,30 +151,93 @@ namespace PirogAlex.MathLib
         /// <summary>
         /// Округляет сконвертированное значение по правилам математики
         /// </summary>
-        /// <param name="inputValue"></param>
-        /// <param name="expectedBaseFormat"></param>
-        /// <param name="valueLeft"></param>
+        /// <param name="inputValue">Значение рассчитанное с желаемой точностью</param>
+        /// <param name="expectedBaseFormat">Желаемая база числа</param>
+        /// <param name="valueInBaseFormatRange">Значение в пределах указанной базы</param>
+        /// <param name="currentValue"></param>
         /// <returns></returns>
-        private string ConvertNumberUpIfNeeded(string inputValue, int expectedBaseFormat, double valueLeft)
+        private string ConvertNumberUpIfNeeded(string inputValue, int expectedBaseFormat, double valueInBaseFormatRange, double currentValue)
         {
+            var valueInSizeOfBase = (int)valueInBaseFormatRange;
+
+            if (CanConvertToUp(expectedBaseFormat, valueInSizeOfBase, currentValue))
+                inputValue = ConvertNumberUp(inputValue);
+
+            return inputValue;
+        }
+
+        private bool CanConvertToUp(int expectedBaseFormat, int valueInSizeOfBase, double currentValue)
+        {
+            var result = false;
+
             if (expectedBaseFormat % 2 > 0)
             {
-                // ReSharper disable once PossibleLossOfFraction
-                if (valueLeft > expectedBaseFormat / 2)
+                if (valueInSizeOfBase > expectedBaseFormat / 2)
                 {
-                    inputValue = ConvertNumberUp(inputValue);
+                    result = true;
+                }
+                else if (valueInSizeOfBase > expectedBaseFormat / 2 - 1)
+                {
+                    while (currentValue > 0)
+                    {
+                        var valueLeft = Math.Truncate(currentValue * expectedBaseFormat);
+
+                        // ReSharper disable once PossibleLossOfFraction
+                        if (valueLeft > expectedBaseFormat / 2)
+                        {
+                            result = true;
+                            break;
+                        }
+
+                        // ReSharper disable once PossibleLossOfFraction
+                        // ReSharper disable once CompareOfFloatsByEqualityOperator
+                        if (valueLeft > expectedBaseFormat / 2 - 1)
+                        {
+                            var valueRight = GetFractionalPart(currentValue * expectedBaseFormat);
+                            currentValue = valueRight;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
             else
             {
-                // ReSharper disable once PossibleLossOfFraction
-                if (valueLeft >= expectedBaseFormat / 2)
+                if (valueInSizeOfBase >= expectedBaseFormat / 2)
                 {
-                    inputValue = ConvertNumberUp(inputValue);
+                    result = true;
+                }
+                else if (valueInSizeOfBase == expectedBaseFormat / 2 - 1)
+                {
+                    while (currentValue > 0)
+                    {
+                        var valueLeft = Math.Truncate(currentValue * expectedBaseFormat);
+
+                        // ReSharper disable once PossibleLossOfFraction
+                        if (valueLeft >= expectedBaseFormat / 2)
+                        {
+                            result = true;
+                            break;
+                        }
+
+                        // ReSharper disable once PossibleLossOfFraction
+                        // ReSharper disable once CompareOfFloatsByEqualityOperator
+                        if (valueLeft == expectedBaseFormat / 2 - 1)
+                        {
+                            var valueRight = GetFractionalPart(currentValue * expectedBaseFormat);
+                            currentValue = valueRight;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 
-            return inputValue;
+            return result;
         }
 
         private double GetFractionalPart(double inputValue)
