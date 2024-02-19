@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>PirogAlex.MathLib</id>
-		<version>1.0.000</version>
+		<version>1.1.000</version>
 		<!--<title>$title$</title>-->
 		<authors>PirogAlex</authors>
 		<description>Пакет для математических операций с числами</description>
