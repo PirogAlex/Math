@@ -115,7 +115,7 @@ namespace PirogAlex.MathLib
             //Повторяем операцию с дробной частью полученного числа до тех пор, пока не получится целое число, либо до необходимого количества знаков после запятой.
             if (Math.Abs(inputValue - Math.Truncate(inputValue)) > 0 && precision > 0)
             {
-                result = $"{result}.";
+                result = $"{result}{NumberFormatInfo.InvariantInfo.NumberDecimalSeparator}";
 
                 var currentPrecision = 1;
                 currentValue = GetFractionalPart(inputValue);
@@ -161,7 +161,7 @@ namespace PirogAlex.MathLib
             var valueInSizeOfBase = (int)valueInBaseFormatRange;
 
             if (CanConvertToUp(expectedBaseFormat, valueInSizeOfBase, currentValue))
-                inputValue = ConvertNumberUp(inputValue);
+                inputValue = ConvertNumberUp(inputValue, expectedBaseFormat);
 
             return inputValue;
         }
@@ -269,9 +269,51 @@ namespace PirogAlex.MathLib
             };
         }
 
-        private string ConvertNumberUp(string result)
+        private string ConvertNumberUp(string inputValue, int expectedBaseFormat)
         {
-            return result;
+            for (int i = inputValue.Length - 1; i >= 0; i--)
+            {
+                var currentLetter = inputValue[i].ToString();
+
+                if (currentLetter == NumberFormatInfo.InvariantInfo.NumberDecimalSeparator)
+                    continue;
+
+                var newValue = currentLetter switch
+                {
+                    "0" => 1,
+                    "1" => 2,
+                    "2" => 3,
+                    "3" => 4,
+                    "4" => 5,
+                    "5" => 6,
+                    "6" => 7,
+                    "7" => 8,
+                    "8" => 9,
+                    "9" => 10,
+                    "A" => 11,
+                    "B" => 12,
+                    "C" => 13,
+                    "D" => 14,
+                    "E" => 15,
+                    "F" => 16,
+                    _ => throw new ArgumentException($"Unable to recognize char: {currentLetter}. This char from unsupported size base system!")
+                };
+
+                if (newValue == expectedBaseFormat)
+                {
+                    newValue = 0;
+                }
+
+                var newValueStr = expectedBaseFormat > 10
+                    ? ConvertDigitToChar(newValue)
+                    : newValue.ToString(CultureInfo.InvariantCulture);
+                inputValue = inputValue.Remove(i, 1).Insert(i, newValueStr);
+
+                if (newValue != 0)
+                    break;
+            }
+
+            return inputValue;
         }
     }
 }
